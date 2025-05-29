@@ -1,0 +1,111 @@
+﻿@model List<RankingVideojuegos.Models.Videojuego>
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+
+@{
+    ViewData["Title"] = "Ranking de Videojuegos";
+}
+
+<h2 class="text-center mb-4">Ranking de Videojuegos</h2>
+
+@if (User.IsInRole("admin"))
+{
+    <div class="mb-4 text-end">
+        <a asp-action="Create" class="btn btn-success">
+            <i class="fas fa-plus-circle"></i> Nuevo Videojuego
+        </a>
+    </div>
+}
+
+<div class="row">
+    @foreach (var juego in Model)
+    {
+        <div class="col-md-4 mb-4" data-aos="fade-up">
+            <div class="card h-100 shadow">
+                <img src="@juego.ImagenUrl" class="card-img-top" style="object-fit: cover; height: 200px;" />
+                <div class="card-body">
+                    <h5 class="card-title">@juego.Titulo</h5>
+                    <span class="badge @(juego.Disponibilidad == "Disponible" ? "bg-success" :
+                                        juego.Disponibilidad == "Agotado" ? "bg-danger" : "bg-warning text-dark")">
+                        @juego.Disponibilidad
+                    </span>
+
+                    <p class="mt-2">
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            if (i <= Math.Round(juego.PuntuacionPromedio))
+                            {
+                                <i class="fas fa-star text-warning"></i>
+                            }
+                            else
+                            {
+                                <i class="far fa-star text-warning"></i>
+                            }
+                        }
+                        <span class="ms-2">(@juego.PuntuacionPromedio.ToString("0.0"))</span>
+                    </p>
+
+                    <p>
+                        @foreach (var p in juego.Plataformas.Select(p => p.Plataforma.Nombre))
+                        {
+                            <span class="badge bg-secondary me-1">@p</span>
+                        }
+                    </p>
+
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <a asp-action="Details" asp-route-id="@juego.Id" class="btn btn-outline-primary btn-sm">Ver detalles</a>
+
+                        @if (!string.IsNullOrEmpty(juego.TrailerEmbedUrl))
+                        {
+                            <button class="btn btn-outline-dark btn-sm" data-bs-toggle="modal" data-bs-target="#modalTrailer" data-url="@juego.TrailerEmbedUrl">
+                                Ver tráiler
+                            </button>
+                        }
+                    </div>
+
+                    @if (User.IsInRole("admin"))
+                    {
+                        <div class="d-flex justify-content-between mt-3">
+                            <a asp-action="Edit" asp-route-id="@juego.Id" class="btn btn-warning btn-sm">
+                                <i class="fas fa-edit"></i> Editar
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@juego.Id" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de que deseas eliminar este videojuego?');">
+                                <i class="fas fa-trash-alt"></i> Eliminar
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- Modal para el tráiler -->
+<div class="modal fade" id="modalTrailer" tabindex="-1" aria-labelledby="modalTrailerLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body p-0">
+                <div class="ratio ratio-16x9">
+                    <iframe id="iframeTrailer" src="" frameborder="0" allowfullscreen
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const modalTrailer = document.getElementById('modalTrailer');
+        modalTrailer.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            const url = button.getAttribute('data-url');
+            const iframe = document.getElementById('iframeTrailer');
+            iframe.src = url;
+        });
+
+        modalTrailer.addEventListener('hidden.bs.modal', function () {
+            document.getElementById('iframeTrailer').src = '';
+        });
+    </script>
+}

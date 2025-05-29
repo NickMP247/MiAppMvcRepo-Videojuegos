@@ -1,6 +1,56 @@
 ﻿@{
-    ViewData["Title"] = "Privacy Policy";
+    ViewData["Title"] = "Política de Privacidad";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<h2 class="text-center my-4">Política de Privacidad</h2>
+
+<div class="container">
+    <div class="card shadow p-4">
+        <p>
+            En <strong>Ranking de Videojuegos</strong> nos comprometemos a proteger la privacidad de nuestros usuarios.
+            Esta política describe cómo recopilamos, utilizamos y protegemos la información personal que se proporciona en nuestro sitio.
+        </p>
+
+        <h5 class="mt-4">1. Información que recopilamos</h5>
+        <ul>
+            <li>Direcciones de correo electrónico y contraseñas (encriptadas) para el acceso a cuentas.</li>
+            <li>Valoraciones y comentarios que los usuarios dejan en videojuegos.</li>
+            <li>Imágenes subidas por administradores a través de Amazon S3.</li>
+            <li>Enlaces de videos de YouTube asociados a los videojuegos.</li>
+        </ul>
+
+        <h5 class="mt-4">2. Uso de la información</h5>
+        <p>
+            Utilizamos la información recopilada para:
+        </p>
+        <ul>
+            <li>Gestionar el acceso y autenticación de usuarios.</li>
+            <li>Mostrar valoraciones y rankings.</li>
+            <li>Almacenar y mostrar imágenes de videojuegos de forma segura.</li>
+            <li>Reproducir tráilers mediante incrustaciones de YouTube.</li>
+        </ul>
+
+        <h5 class="mt-4">3. Compartición de datos</h5>
+        <p>
+            No compartimos tus datos personales con terceros, salvo cuando sea requerido por ley.
+            Las imágenes se almacenan de forma segura en un bucket privado de Amazon Web Services (AWS).
+        </p>
+
+        <h5 class="mt-4">4. Seguridad</h5>
+        <p>
+            Implementamos medidas técnicas para proteger la información, como el uso de HTTPS, autenticación segura y almacenamiento en la nube con permisos restringidos.
+        </p>
+
+        <h5 class="mt-4">5. Derechos del usuario</h5>
+        <p>
+            Puedes solicitar en cualquier momento la eliminación de tu cuenta o de los datos personales asociados, escribiéndonos a través del formulario de contacto.
+        </p>
+
+        <h5 class="mt-4">6. Cambios en esta política</h5>
+        <p>
+            Esta política puede ser modificada. Las actualizaciones se publicarán en esta misma página.
+        </p>
+
+        <p class="text-muted mt-4"><small>Última actualización: @DateTime.Now.ToString("dd/MM/yyyy")</small></p>
+    </div>
+</div>

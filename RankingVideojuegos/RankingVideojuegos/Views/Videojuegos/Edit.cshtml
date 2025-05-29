@@ -1,0 +1,63 @@
+﻿@model RankingVideojuegos.Models.Videojuego
+
+@{
+    ViewData["Title"] = "Editar videojuego";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="Edit" enctype="multipart/form-data" method="post">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="mb-3">
+        <label asp-for="Titulo" class="form-label">Título</label>
+        <input asp-for="Titulo" class="form-control" />
+        <span asp-validation-for="Titulo" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Descripcion" class="form-label">Descripción</label>
+        <textarea asp-for="Descripcion" class="form-control" rows="3"></textarea>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="FechaLanzamiento" class="form-label">Fecha de lanzamiento</label>
+        <input asp-for="FechaLanzamiento" type="date" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Disponibilidad" class="form-label">Disponibilidad</label>
+        <select asp-for="Disponibilidad" class="form-select">
+            <option>Disponible</option>
+            <option>Agotado</option>
+            <option>Próximamente</option>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Plataformas</label>
+        <select class="form-select" name="PlataformasSeleccionadas" multiple>
+            @foreach (var plataforma in ViewBag.Plataformas as MultiSelectList)
+            {
+                var selected = plataforma.Selected ? "selected" : "";
+                <option value="@plataforma.Value" selected>@plataforma.Text</option>
+            }
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Tráiler (URL de YouTube)</label>
+        <input type="url" asp-for="TrailerUrl" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Imagen (dejar en blanco para no cambiar)</label>
+        <input type="file" name="Imagen" class="form-control" />
+        <div class="mt-2">
+            <img src="@Model.ImagenUrl" class="img-fluid" style="max-height: 150px;" />
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Guardar cambios</button>
+    <a asp-action="Index" class="btn btn-secondary ms-2">Cancelar</a>
+</form>

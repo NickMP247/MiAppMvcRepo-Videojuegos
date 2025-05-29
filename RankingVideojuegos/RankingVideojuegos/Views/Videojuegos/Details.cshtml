@@ -1,0 +1,89 @@
+﻿@model RankingVideojuegos.Models.Videojuego
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+
+<h2>@Model.Titulo</h2>
+
+<img src="@Model.ImagenUrl" class="img-fluid mb-3" style="max-height: 300px;" />
+
+<p><strong>Descripción:</strong> @Model.Descripcion</p>
+<p><strong>Disponibilidad:</strong> @Model.Disponibilidad</p>
+<p><strong>Fecha de lanzamiento:</strong> @Model.FechaLanzamiento.ToShortDateString()</p>
+<p>
+    <strong>Plataformas:</strong>
+    @foreach (var p in Model.Plataformas.Select(p => p.Plataforma.Nombre))
+    {
+        <span class="badge bg-secondary">@p</span>
+    }
+</p>
+
+<p>
+    <strong>Puntuación promedio:</strong>
+    @for (int i = 1; i <= 5; i++)
+    {
+        if (i <= Math.Round(Model.PuntuacionPromedio))
+        {
+            <i class="fas fa-star text-warning"></i>
+        }
+        else
+        {
+            <i class="far fa-star text-warning"></i>
+        }
+    }
+    <span class="ms-2">(@Model.PuntuacionPromedio.ToString("0.0"))</span>
+</p>
+
+@if (SignInManager.IsSignedIn(User))
+{
+    <hr />
+    <h5>Añadir tu valoración</h5>
+    <form asp-controller="Valoraciones" asp-action="Crear" method="post">
+        <input type="hidden" name="videojuegoId" value="@Model.Id" />
+        <div class="mb-2">
+            <label for="puntuacion">Puntuación</label>
+            <select class="form-select" name="puntuacion" required>
+                <option value="1">1 estrella</option>
+                <option value="2">2 estrellas</option>
+                <option value="3">3 estrellas</option>
+                <option value="4">4 estrellas</option>
+                <option value="5">5 estrellas</option>
+            </select>
+        </div>
+        <div class="mb-2">
+            <label for="comentario">Comentario</label>
+            <textarea class="form-control" name="comentario" rows="3"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Enviar valoración</button>
+    </form>
+}
+
+<hr />
+<h5>Valoraciones</h5>
+@if (Model.Valoraciones.Any())
+{
+    @foreach (var v in Model.Valoraciones.OrderByDescending(v => v.Fecha))
+    {
+        <div class="border rounded p-2 mb-2">
+            <div>
+                @for (int i = 1; i <= 5; i++)
+                {
+                    if (i <= v.Puntuacion)
+                    {
+                        <i class="fas fa-star text-warning"></i>
+                    }
+                    else
+                    {
+                        <i class="far fa-star text-warning"></i>
+                    }
+                }
+                <small class="text-muted ms-2">@v.Usuario?.UserName</small>
+            </div>
+            <p class="mb-0">@v.Comentario</p>
+            <small class="text-muted">@v.Fecha.ToLocalTime().ToString("dd MMM yyyy HH:mm")</small>
+        </div>
+    }
+}
+else
+{
+    <p class="text-muted">Aún no hay valoraciones.</p>
+}

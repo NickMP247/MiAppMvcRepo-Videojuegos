@@ -5,16 +5,17 @@ using RankingVideojuegos.Models;
 
 namespace RankingVideojuegos.Data
 {
-    public class ApplicationDbContext : IdentityDbContext<IdentityUser>
+    public class ApplicationDbContext : IdentityDbContext<IdentityUser, ApplicationRole, string>
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-            : base(options)
-        {
-        }
         public DbSet<Videojuego> Videojuegos { get; set; }
         public DbSet<Valoracion> Valoraciones { get; set; }
         public DbSet<Plataforma> Plataformas { get; set; }
         public DbSet<PlataformaVideojuego> PlataformaVideojuego { get; set; }
+
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+            : base(options)
+        {
+        }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -34,4 +35,9 @@ namespace RankingVideojuegos.Data
                 .HasForeignKey(pv => pv.PlataformaId);
         }
     }
+    public class ApplicationRole : IdentityRole
+    {
+        // Puedes agregar propiedades personalizadas aquí si lo necesitas
+    }
+
 }

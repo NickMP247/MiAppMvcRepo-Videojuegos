@@ -18,7 +18,7 @@ namespace RankingVideojuegos.Models
         public int VideojuegoId { get; set; }
         public Videojuego? Videojuego { get; set; }
 
-        public string? UsuarioId { get; set; }
-        public IdentityUser? Usuario { get; set; }
+        public string UsuarioId { get; set; }
+        public IdentityUser Usuario { get; set; }
     }
 }
