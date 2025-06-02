@@ -17,8 +17,7 @@ namespace RankingVideojuegos.Controllers
         {
             _context = context;
             _userManager = userManager;
-        }
-
+        }        
         [HttpPost]
         public async Task<IActionResult> Crear(int videojuegoId, int puntuacion, string comentario)
         {
@@ -62,5 +61,34 @@ namespace RankingVideojuegos.Controllers
 
             return RedirectToAction("Details", "Videojuegos", new { id = videojuegoId });
         }
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> Eliminar(int id)
+        {
+            var valoracion = await _context.Valoraciones.Include(v => v.Videojuego).FirstOrDefaultAsync(v => v.Id == id);
+
+            if (valoracion == null)
+            {
+                TempData["Error"] = "Valoración no encontrada.";
+                return RedirectToAction("Index", "Videojuegos");
+            }
+
+            var userId = _userManager.GetUserId(User);
+            var esAdmin = User.IsInRole("Admin");
+
+            // Solo el autor o un admin puede borrar
+            if (valoracion.UsuarioId != userId && !esAdmin)
+            {
+                TempData["Error"] = "No tienes permiso para borrar esta valoración.";
+                return RedirectToAction("Details", "Videojuegos", new { id = valoracion.VideojuegoId });
+            }
+
+            _context.Valoraciones.Remove(valoracion);
+            await _context.SaveChangesAsync();
+
+            TempData["Mensaje"] = "Valoración eliminada correctamente.";
+            return RedirectToAction("Details", "Videojuegos", new { id = valoracion.VideojuegoId });
+        }
+
     }
 }

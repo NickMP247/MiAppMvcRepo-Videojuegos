@@ -17,6 +17,7 @@ namespace RankingVideojuegos.Controllers
             _context = context;
             _s3Service = s3Service;
         }
+        
         public async Task<IActionResult> Index()
         {
             var juegos = await _context.Videojuegos
@@ -27,6 +28,7 @@ namespace RankingVideojuegos.Controllers
 
             return View(juegos);
         }
+        
         public async Task<IActionResult> Details(int id)
         {
             var juego = await _context.Videojuegos

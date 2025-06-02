@@ -1,89 +1,247 @@
 ﻿@model RankingVideojuegos.Models.Videojuego
 @using Microsoft.AspNetCore.Identity
 @inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+@inject IHttpContextAccessor HttpContextAccessor
 
-<h2>@Model.Titulo</h2>
+@{
+    ViewData["Title"] = Model.Titulo;
 
-<img src="@Model.ImagenUrl" class="img-fluid mb-3" style="max-height: 300px;" />
+    string? embedId = Model.TrailerEmbedUrl?.Split("/").LastOrDefault();
+    string? bannerUrl = !string.IsNullOrEmpty(Model.TrailerEmbedUrl)
+        ? Model.TrailerEmbedUrl.Replace("watch?v=", "embed/") + "?autoplay=1&mute=1&controls=0&loop=1&playlist=" + embedId
+        : null;
 
-<p><strong>Descripción:</strong> @Model.Descripcion</p>
-<p><strong>Disponibilidad:</strong> @Model.Disponibilidad</p>
-<p><strong>Fecha de lanzamiento:</strong> @Model.FechaLanzamiento.ToShortDateString()</p>
-<p>
-    <strong>Plataformas:</strong>
-    @foreach (var p in Model.Plataformas.Select(p => p.Plataforma.Nombre))
+    var userId = UserManager.GetUserId(User);
+    var isAdmin = User.IsInRole("Admin");
+    var error = TempData["Error"] as string;
+}
+
+<div class="video-banner position-relative">
+    @if (!string.IsNullOrEmpty(Model.TrailerEmbedUrl))
     {
-        <span class="badge bg-secondary">@p</span>
+        <iframe class="video-background"
+                src="@bannerUrl"
+                frameborder="0"
+                allow="autoplay; encrypted-media"
+                allowfullscreen>
+        </iframe>
     }
-</p>
 
-<p>
-    <strong>Puntuación promedio:</strong>
-    @for (int i = 1; i <= 5; i++)
-    {
-        if (i <= Math.Round(Model.PuntuacionPromedio))
-        {
-            <i class="fas fa-star text-warning"></i>
-        }
-        else
-        {
-            <i class="far fa-star text-warning"></i>
-        }
-    }
-    <span class="ms-2">(@Model.PuntuacionPromedio.ToString("0.0"))</span>
-</p>
+    <div class="video-overlay text-white d-flex align-items-end px-5 pb-4" data-aos="fade-up">
+        <div class="d-flex align-items-center bg-dark bg-opacity-50 p-3 rounded shadow-lg">
+            <img src="@Model.ImagenUrl" class="me-4 shadow rounded" style="height: 140px;" />
+            <div>
+                <h1 class="display-4 fw-bold">@Model.Titulo</h1>
+                <span class="badge fs-6 @(Model.Disponibilidad == "Disponible" ? "bg-success" : Model.Disponibilidad == "Agotado" ? "bg-danger" : "bg-warning text-dark")">
+                    @Model.Disponibilidad
+                </span>
+                <br />
+                <button class="btn btn-gradient mt-3 px-4 py-2"
+                        data-bs-toggle="modal"
+                        data-bs-target="#trailerModal"
+                        data-trailer-url="@(Model.TrailerEmbedUrl?.Replace("watch?v=", "embed/") + "?autoplay=1&mute=0&controls=1&rel=0")">
+                    <i class="fas fa-play me-2"></i>Ver tráiler
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 
-@if (SignInManager.IsSignedIn(User))
+@if (!string.IsNullOrEmpty(error))
 {
+    <div class="modal fade" id="errorModal" tabindex="-1" aria-hidden="true" data-aos="zoom-in">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">Error</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <p>@error</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="container mt-5" data-aos="fade-up">
+    <p><strong>Descripción:</strong> @Model.Descripcion</p>
+    <p><strong>Fecha de lanzamiento:</strong> @Model.FechaLanzamiento.ToShortDateString()</p>
+    <p>
+        <strong>Plataformas:</strong>
+        @foreach (var p in Model.Plataformas.Select(p => p.Plataforma.Nombre))
+        {
+            var color = p switch
+            {
+                "PC" => "#6c757d",
+                "PlayStation 5" => "#003791",
+                "PlayStation 4" => "#1b3f8b",
+                "Xbox Series X" => "#107C10",
+                "Xbox One" => "#3A9A5B",
+                "Nintendo Switch" => "#E60012",
+                "Steam Deck" => "#171A21",
+                "Mobile" => "#17a2b8",
+                _ => "#adb5bd"
+            };
+            <span class="badge me-1" style="background-color:@color; color:white;">@p</span>
+        }
+    </p>
+
+    <p>
+        <strong>Puntuación promedio:</strong>
+        @for (int i = 1; i <= 5; i++)
+        {
+            if (i <= Math.Round(Model.PuntuacionPromedio))
+            {
+                <i class="fas fa-star text-warning"></i>
+            }
+            else
+            {
+                <i class="far fa-star text-warning"></i>
+            }
+        }
+        <span class="ms-2">(@Model.PuntuacionPromedio.ToString("0.0"))</span>
+    </p>
+
     <hr />
     <h5>Añadir tu valoración</h5>
-    <form asp-controller="Valoraciones" asp-action="Crear" method="post">
-        <input type="hidden" name="videojuegoId" value="@Model.Id" />
-        <div class="mb-2">
-            <label for="puntuacion">Puntuación</label>
-            <select class="form-select" name="puntuacion" required>
-                <option value="1">1 estrella</option>
-                <option value="2">2 estrellas</option>
-                <option value="3">3 estrellas</option>
-                <option value="4">4 estrellas</option>
-                <option value="5">5 estrellas</option>
-            </select>
-        </div>
-        <div class="mb-2">
-            <label for="comentario">Comentario</label>
-            <textarea class="form-control" name="comentario" rows="3"></textarea>
-        </div>
-        <button type="submit" class="btn btn-primary">Enviar valoración</button>
-    </form>
-}
 
-<hr />
-<h5>Valoraciones</h5>
-@if (Model.Valoraciones.Any())
-{
-    @foreach (var v in Model.Valoraciones.OrderByDescending(v => v.Fecha))
+    @if (SignInManager.IsSignedIn(User))
     {
-        <div class="border rounded p-2 mb-2">
-            <div>
-                @for (int i = 1; i <= 5; i++)
-                {
-                    if (i <= v.Puntuacion)
-                    {
-                        <i class="fas fa-star text-warning"></i>
-                    }
-                    else
-                    {
-                        <i class="far fa-star text-warning"></i>
-                    }
-                }
-                <small class="text-muted ms-2">@v.Usuario?.UserName</small>
+        <form asp-controller="Valoraciones" asp-action="Crear" method="post" data-aos="fade-up">
+            <input type="hidden" name="videojuegoId" value="@Model.Id" />
+            <div class="mb-2">
+                <label for="puntuacion">Puntuación</label>
+                <select class="form-select" name="puntuacion" required>
+                    <option value="1">1 estrella</option>
+                    <option value="2">2 estrellas</option>
+                    <option value="3">3 estrellas</option>
+                    <option value="4">4 estrellas</option>
+                    <option value="5">5 estrellas</option>
+                </select>
             </div>
-            <p class="mb-0">@v.Comentario</p>
-            <small class="text-muted">@v.Fecha.ToLocalTime().ToString("dd MMM yyyy HH:mm")</small>
+            <div class="mb-2">
+                <label for="comentario">Comentario</label>
+                <textarea class="form-control" name="comentario" rows="3"></textarea>
+            </div>
+            <button type="submit" class="btn btn-gradient px-4 py-2">Enviar valoración</button>
+        </form>
+    }
+    else
+    {
+        <div class="alert alert-info" data-aos="fade-up">
+            Para valorar este videojuego, debes <a asp-area="Identity" asp-page="/Account/Login">iniciar sesión</a> o
+            <a asp-area="Identity" asp-page="/Account/Register">registrarte</a>.
         </div>
     }
-}
-else
-{
-    <p class="text-muted">Aún no hay valoraciones.</p>
+
+    <hr />
+    <h5>Valoraciones</h5>
+    @if (Model.Valoraciones.Any())
+    {
+        @foreach (var v in Model.Valoraciones.OrderByDescending(v => v.Fecha))
+        {
+            <div class="border rounded p-2 mb-2" data-aos="fade-up">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            if (i <= v.Puntuacion)
+                            {
+                                <i class="fas fa-star text-warning"></i>
+                            }
+                            else
+                            {
+                                <i class="far fa-star text-warning"></i>
+                            }
+                        }
+                        <small class="text-muted ms-2">@v.Usuario?.UserName</small>
+                    </div>
+                    @if ((isAdmin || v.UsuarioId == userId))
+                    {
+                        <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" data-id="@v.Id">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    }
+                </div>
+                <p class="mb-0">@v.Comentario</p>
+                <small class="text-muted">@v.Fecha.ToLocalTime().ToString("dd MMM yyyy HH:mm")</small>
+            </div>
+        }
+    }
+    else
+    {
+        <p class="text-muted">Aún no hay valoraciones para @Model.Titulo</p>
+    }
+</div>
+
+<!-- Modales -->
+<div class="modal fade" id="trailerModal" tabindex="-1" aria-hidden="true" data-aos="fade-up">
+    <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content bg-black">
+            <div class="modal-body p-0">
+                <iframe id="modalTrailer" class="w-100 h-100" allow="autoplay; encrypted-media" allowfullscreen frameborder="0"></iframe>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-hidden="true" data-aos="flip-up">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmar eliminación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                ¿Estás seguro de que deseas eliminar esta valoración?
+            </div>
+            <div class="modal-footer">
+                <form id="deleteForm" method="post" asp-controller="Valoraciones" asp-action="Eliminar">
+                    <input type="hidden" name="id" id="valoracionId" />
+                    <button type="submit" class="btn btn-danger">Eliminar</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+    <script>
+        AOS.init();
+
+        const trailerModal = document.getElementById('trailerModal');
+        const trailerIframe = document.getElementById('modalTrailer');
+
+        trailerModal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            const url = button.getAttribute('data-trailer-url');
+            if (url) trailerIframe.src = url;
+        });
+
+        trailerModal.addEventListener('hidden.bs.modal', function () {
+            trailerIframe.src = '';
+        });
+
+        const confirmDeleteModal = document.getElementById('confirmDeleteModal');
+        confirmDeleteModal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            const id = button.getAttribute('data-id');
+            document.getElementById('valoracionId').value = id;
+        });
+
+        window.addEventListener('load', () => {
+            const error = "@error";
+            if (error) {
+                const modal = new bootstrap.Modal(document.getElementById('errorModal'));
+                modal.show();
+            }
+        });
+    </script>
 }
