@@ -13,7 +13,7 @@
         : null;
 
     var userId = UserManager.GetUserId(User);
-    var isAdmin = User.IsInRole("Admin");
+    var isAdmin = User.IsInRole("admin");
     var error = TempData["Error"] as string;
 }
 
@@ -29,7 +29,7 @@
     }
 
     <div class="video-overlay text-white d-flex align-items-end px-5 pb-4" data-aos="fade-up">
-        <div class="d-flex align-items-center bg-dark bg-opacity-50 p-3 rounded shadow-lg">
+        <div class="d-flex align-items-center p-3 rounded shadow-lg">
             <img src="@Model.ImagenUrl" class="me-4 shadow rounded" style="height: 140px;" />
             <div>
                 <h1 class="display-4 fw-bold">@Model.Titulo</h1>

@@ -74,7 +74,7 @@ namespace RankingVideojuegos.Controllers
             }
 
             var userId = _userManager.GetUserId(User);
-            var esAdmin = User.IsInRole("Admin");
+            var esAdmin = User.IsInRole("admin");
 
             // Solo el autor o un admin puede borrar
             if (valoracion.UsuarioId != userId && !esAdmin)
