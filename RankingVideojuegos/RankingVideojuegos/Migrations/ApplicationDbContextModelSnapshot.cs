@@ -270,6 +270,7 @@ namespace RankingVideojuegos.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("UsuarioId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("VideojuegoId")
@@ -293,6 +294,7 @@ namespace RankingVideojuegos.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Descripcion")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Disponibilidad")
@@ -303,6 +305,7 @@ namespace RankingVideojuegos.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("ImagenUrl")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<double>("PuntuacionPromedio")
@@ -313,6 +316,7 @@ namespace RankingVideojuegos.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("TrailerUrl")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -394,7 +398,9 @@ namespace RankingVideojuegos.Migrations
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "Usuario")
                         .WithMany()
-                        .HasForeignKey("UsuarioId");
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("RankingVideojuegos.Models.Videojuego", "Videojuego")
                         .WithMany("Valoraciones")
