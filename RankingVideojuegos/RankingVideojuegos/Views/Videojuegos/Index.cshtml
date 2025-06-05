@@ -48,7 +48,19 @@
                     <p>
                         @foreach (var p in juego.Plataformas.Select(p => p.Plataforma.Nombre))
                         {
-                            <span class="badge bg-secondary me-1">@p</span>
+                            var color = p switch
+                            {
+                                "PC" => "#6c757d",
+                                "PlayStation 5" => "#003791",
+                                "PlayStation 4" => "#1b3f8b",
+                                "Xbox Series X" => "#107C10",
+                                "Xbox One" => "#3A9A5B",
+                                "Nintendo Switch" => "#E60012",
+                                "Steam Deck" => "#171A21",
+                                "Mobile" => "#17a2b8",
+                                _ => "#adb5bd"
+                            };
+                            <span class="badge me-1" style="background-color:@color; color:white;">@p</span>
                         }
                     </p>
 

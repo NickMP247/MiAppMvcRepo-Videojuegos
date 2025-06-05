@@ -1,0 +1,16 @@
+version: 0.2
+phases:
+  install:
+    runtime-versions:
+      dotnet: 8.0
+  build:
+    commands:
+      - echo "Restaurando dependencias..."
+      - dotnet restore
+      - echo "Publicando la aplicación en modo Release..."
+      - "dotnet publish -c Release -o ./publish"
+artifacts:
+  files:
+    - '**/*'
+  base-directory: publish
+  name: publish.zip
