@@ -1,14 +1,17 @@
 version: 0.2
+
 phases:
   install:
     runtime-versions:
       dotnet: 8.0
+
   build:
     commands:
       - echo "Restaurando dependencias..."
-      - - dotnet restore src/RankingVideojuegos/RankingVideojuegos/RankingVideojuegos.csproj
+      - dotnet restore RankingVideojuegos/RankingVideojuegos/RankingVideojuegos.csproj
       - echo "Publicando la aplicación en modo Release..."
-      - "dotnet publish -c Release -o ./publish"
+      - dotnet publish RankingVideojuegos/RankingVideojuegos/RankingVideojuegos.csproj -c Release -o publish
+
 artifacts:
   files:
     - '**/*'
