@@ -11,11 +11,11 @@ namespace RankingVideojuegos.Models
 
         [Required]
         public string? Titulo { get; set; }
-
+        [Required]
         public string? Descripcion { get; set; }
-
+        [Required]
         public string? ImagenUrl { get; set; }
-
+        [Required]
         public string? TrailerUrl { get; set; }
 
         [Required]
