@@ -174,3 +174,191 @@ footer {
     border-radius: 10px;
     overflow: hidden;
 }
+
+/* Estilo exclusivo para el formulario de edición */
+.edit-form {
+    --primary-purple: #9f7aea;
+    --purple-light: #b794f4;
+    --bg-dark: #1c1c1c;
+    --text-light: #e0e0e0;
+    --border-color: #292929;
+    --accent-glow: 0 0 10px rgba(159, 122, 234, 0.4);
+    background-color: var(--bg-dark);
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.3);
+    color: var(--text-light);
+    border: 1px solid var(--border-color);
+}
+
+    .edit-form h2 {
+        font-size: 1.9rem;
+        font-weight: bold;
+        text-align: center;
+        color: var(--text-light);
+        margin-bottom: 2rem;
+        border-bottom: 2px solid var(--primary-purple);
+        padding-bottom: 0.5rem;
+    }
+
+    .edit-form label {
+        color: var(--primary-purple);
+        font-weight: 600;
+    }
+
+    .edit-form input,
+    .edit-form textarea,
+    .edit-form select {
+        background-color: #121212;
+        color: var(--text-light);
+        border: 1px solid var(--border-color);
+        transition: border-color 0.3s ease;
+    }
+
+        .edit-form input:focus,
+        .edit-form textarea:focus,
+        .edit-form select:focus {
+            border-color: var(--primary-purple);
+            box-shadow: var(--accent-glow);
+        }
+
+    .edit-form .form-text {
+        color: #aaa;
+    }
+
+    .edit-form .btn-gradient {
+        background: linear-gradient(to right, #7f5af0, #6246ea);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        padding: 0.6rem 1.5rem;
+        font-weight: 600;
+        box-shadow: 0 0 12px rgba(127, 90, 240, 0.4);
+    }
+
+        .edit-form .btn-gradient:hover {
+            background: linear-gradient(to right, #9775fa, #715def);
+            transform: scale(1.03);
+        }
+
+    .edit-form .btn-outline-primary {
+        color: var(--primary-purple);
+        border-color: var(--primary-purple);
+    }
+
+        .edit-form .btn-outline-primary:hover {
+            background-color: var(--primary-purple);
+            color: white;
+        }
+        /*-------------------------------------------*/
+:root {
+    --neon-glow: 0 0 15px rgba(159, 122, 234, 0.6);
+    --purple-outline: #9f7aea;
+    --purple-glow-hover: 0 0 20px rgba(159, 122, 234, 0.8);
+}
+
+.card-neon {
+    background-color: #1c1c1c;
+    border: 1px solid #292929;
+    color: #ffffff;
+    border-radius: 12px;
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+    .card-neon:hover {
+        box-shadow: 0 0 12px rgba(159, 122, 234, 0.6), 0 0 24px rgba(159, 122, 234, 0.3);
+        transform: translateY(-5px);
+    }
+
+.btn-neon {
+    border: 1px solid var(--purple-outline);
+    color: var(--purple-outline);
+    background-color: transparent;
+    transition: all 0.3s ease;
+}
+
+    .btn-neon:hover {
+        background-color: var(--purple-outline);
+        color: #fff;
+        box-shadow: var(--neon-glow);
+    }
+
+.btn-neon-light {
+    color: #ffffff;
+    border: 1px solid #b794f4;
+    background-color: transparent;
+    transition: 0.3s ease;
+}
+
+    .btn-neon-light:hover {
+        background-color: #b794f4;
+        color: #121212;
+        box-shadow: var(--neon-glow);
+    }
+
+.text-shadow {
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
+}
+/* Estilo para títulos grandes con sombra sutil */
+.text-shadow-neon {
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+}
+
+/* Ajuste del tamaño del título en el banner */
+.video-overlay h1 {
+    font-size: 2.8rem;
+}
+
+/* Tamaño y espaciado coherente para el badge */
+.video-overlay .badge {
+    font-size: 0.85rem;
+    padding: 0.4rem 0.75rem;
+}
+
+
+
+
+/* Botón con icono de tres rayas estilo filtros */
+.btn-icon-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background-color: transparent;
+    border: 1px solid var(--purple-outline);
+    color: var(--purple-outline);
+    font-weight: 600;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    transition: 0.3s;
+}
+
+    .btn-icon-toggle:hover {
+        background-color: var(--purple-outline);
+        color: #fff;
+        box-shadow: var(--neon-glow);
+    }
+
+/* Espacio y orden para el buscador y filtros */
+#busquedaForm .form-control {
+    background-color: #1c1c1c;
+    border: 1px solid #292929;
+    color: #e0e0e0;
+}
+
+    #busquedaForm .form-control:focus {
+        border-color: var(--purple-outline);
+        box-shadow: var(--neon-glow);
+    }
+
+#filtros {
+    margin-top: 1rem;
+    border-radius: 12px;
+    background-color: #1f1f1f;
+    border: 1px solid #292929;
+}
+
+    #filtros label {
+        color: var(--purple-outline);
+        font-weight: 600;
+    }

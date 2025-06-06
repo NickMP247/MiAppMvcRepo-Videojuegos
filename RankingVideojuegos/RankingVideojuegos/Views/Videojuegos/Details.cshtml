@@ -17,6 +17,7 @@
     var error = TempData["Error"] as string;
 }
 
+<!-- Banner del videojuego -->
 <div class="video-banner position-relative">
     @if (!string.IsNullOrEmpty(Model.TrailerEmbedUrl))
     {
@@ -29,50 +30,58 @@
     }
 
     <div class="video-overlay text-white d-flex align-items-end px-5 pb-4" data-aos="fade-up">
-        <div class="d-flex align-items-center p-3 rounded shadow-lg">
-            <img src="@Model.ImagenUrl" class="me-4 shadow rounded" style="height: 140px;" />
-            <div>
-                <h1 class="display-4 fw-bold">@Model.Titulo</h1>
-                <span class="badge fs-6 @(Model.Disponibilidad == "Disponible" ? "bg-success" : Model.Disponibilidad == "Agotado" ? "bg-danger" : "bg-warning text-dark")">
+        <div class="d-flex align-items-center gap-4 p-3">
+            <img src="@Model.ImagenUrl" class="rounded shadow" style="height: 140px;" />
+
+            <div class="d-flex flex-column align-items-start">
+                <h1 class="display-3 fw-bold text-light text-shadow-neon">@Model.Titulo</h1>
+
+                <span class="badge px-3 py-2 shadow-sm small @(Model.Disponibilidad == "Disponible" ? "bg-success"
+                : Model.Disponibilidad == "Agotado" ? "bg-danger"
+                : "bg-warning text-dark")">
                     @Model.Disponibilidad
                 </span>
-                <br />
-                <button class="btn btn-gradient mt-3 px-4 py-2"
+
+                <button class="btn btn-gradient btn-sm mt-3 shadow-sm"
                         data-bs-toggle="modal"
                         data-bs-target="#trailerModal"
-                        data-trailer-url="@(Model.TrailerEmbedUrl?.Replace("watch?v=", "embed/") + "?autoplay=1&mute=0&controls=1&rel=0")">
+                        data-trailer-url="@Model.TrailerEmbedUrl">
                     <i class="fas fa-play me-2"></i>Ver tráiler
                 </button>
             </div>
         </div>
     </div>
+
+
+
 </div>
 
 @if (!string.IsNullOrEmpty(error))
 {
     <div class="modal fade" id="errorModal" tabindex="-1" aria-hidden="true" data-aos="zoom-in">
         <div class="modal-dialog">
-            <div class="modal-content">
+            <div class="modal-content bg-dark text-light">
                 <div class="modal-header bg-danger text-white">
                     <h5 class="modal-title">Error</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                 </div>
-                <div class="modal-body">
-                    <p>@error</p>
-                </div>
+                <div class="modal-body">@error</div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Cerrar</button>
                 </div>
             </div>
         </div>
     </div>
 }
 
-<div class="container mt-5" data-aos="fade-up">
-    <p><strong>Descripción:</strong> @Model.Descripcion</p>
-    <p><strong>Fecha de lanzamiento:</strong> @Model.FechaLanzamiento.ToShortDateString()</p>
+<!-- Contenido del videojuego -->
+<div class="container mt-5 edit-form" data-aos="fade-up">
+    <p><strong>📝 Descripción:</strong><br />@Model.Descripcion</p>
+
+    <p><strong>📅 Fecha de lanzamiento:</strong> @Model.FechaLanzamiento.ToShortDateString()</p>
+
     <p>
-        <strong>Plataformas:</strong>
+        <strong>🕹️ Plataformas:</strong>
         @foreach (var p in Model.Plataformas.Select(p => p.Plataforma.Nombre))
         {
             var color = p switch
@@ -92,7 +101,7 @@
     </p>
 
     <p>
-        <strong>Puntuación promedio:</strong>
+        <strong>⭐ Puntuación promedio:</strong>
         @for (int i = 1; i <= 5; i++)
         {
             if (i <= Math.Round(Model.PuntuacionPromedio))
@@ -108,24 +117,23 @@
     </p>
 
     <hr />
-    <h5>Añadir tu valoración</h5>
+    <h5 class="text-light mb-3">💬 Añadir tu valoración</h5>
 
     @if (SignInManager.IsSignedIn(User))
     {
         <form asp-controller="Valoraciones" asp-action="Crear" method="post" data-aos="fade-up">
             <input type="hidden" name="videojuegoId" value="@Model.Id" />
             <div class="mb-2">
-                <label for="puntuacion">Puntuación</label>
+                <label for="puntuacion" class="form-label">Puntuación</label>
                 <select class="form-select" name="puntuacion" required>
-                    <option value="1">1 estrella</option>
-                    <option value="2">2 estrellas</option>
-                    <option value="3">3 estrellas</option>
-                    <option value="4">4 estrellas</option>
-                    <option value="5">5 estrellas</option>
+                    @for (int i = 1; i <= 5; i++)
+                    {
+                        <option value="@i">@i estrella@(i > 1 ? "s" : "")</option>
+                    }
                 </select>
             </div>
             <div class="mb-2">
-                <label for="comentario">Comentario</label>
+                <label for="comentario" class="form-label">Comentario</label>
                 <textarea class="form-control" name="comentario" rows="3"></textarea>
             </div>
             <button type="submit" class="btn btn-gradient px-4 py-2">Enviar valoración</button>
@@ -140,13 +148,13 @@
     }
 
     <hr />
-    <h5>Valoraciones</h5>
+    <h5 class="text-light mb-3">🗣️ Valoraciones</h5>
     @if (Model.Valoraciones.Any())
     {
         @foreach (var v in Model.Valoraciones.OrderByDescending(v => v.Fecha))
         {
-            <div class="border rounded p-2 mb-2" data-aos="fade-up">
-                <div class="d-flex justify-content-between">
+            <div class="border rounded p-3 mb-3 bg-dark text-light" data-aos="fade-up">
+                <div class="d-flex justify-content-between align-items-center">
                     <div>
                         @for (int i = 1; i <= 5; i++)
                         {
@@ -163,48 +171,55 @@
                     </div>
                     @if ((isAdmin || v.UsuarioId == userId))
                     {
-                        <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" data-id="@v.Id">
+                        <button class="btn btn-sm btn-danger" data-bs-toggle="modal"
+                                data-bs-target="#confirmDeleteModal" data-id="@v.Id">
                             <i class="fas fa-trash"></i>
                         </button>
                     }
                 </div>
-                <p class="mb-0">@v.Comentario</p>
-                <small class="text-muted">@v.Fecha.ToLocalTime().ToString("dd MMM yyyy HH:mm")</small>
+                <p class="mb-0 mt-2">@v.Comentario</p>
+                <small class="text-muted">@v.Fecha.ToLocalTime():dd MMM yyyy HH:mm</small>
             </div>
         }
     }
     else
     {
-        <p class="text-muted">Aún no hay valoraciones para @Model.Titulo</p>
+        <p class="text-muted">Aún no hay valoraciones para <strong>@Model.Titulo</strong>.</p>
     }
 </div>
 
-<!-- Modales -->
-<div class="modal fade" id="trailerModal" tabindex="-1" aria-hidden="true" data-aos="fade-up">
-    <div class="modal-dialog modal-fullscreen">
-        <div class="modal-content bg-black">
+<!-- Modal para el tráiler -->
+<div class="modal fade" id="trailerModal" tabindex="-1" aria-labelledby="modalTrailerLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
             <div class="modal-body p-0">
-                <iframe id="modalTrailer" class="w-100 h-100" allow="autoplay; encrypted-media" allowfullscreen frameborder="0"></iframe>
+                <div class="ratio ratio-16x9">
+                    <iframe id="iframeTrailer" src="" frameborder="0" allowfullscreen
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture">
+                    </iframe>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
+
+<!-- Modal eliminar valoración -->
 <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-hidden="true" data-aos="flip-up">
     <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Confirmar eliminación</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        <div class="modal-content bg-dark text-light rounded shadow">
+            <div class="modal-header border-bottom-0">
+                <h5 class="modal-title text-danger fw-bold">Eliminar valoración</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
             <div class="modal-body">
                 ¿Estás seguro de que deseas eliminar esta valoración?
             </div>
-            <div class="modal-footer">
+            <div class="modal-footer border-top-0">
                 <form id="deleteForm" method="post" asp-controller="Valoraciones" asp-action="Eliminar">
                     <input type="hidden" name="id" id="valoracionId" />
                     <button type="submit" class="btn btn-danger">Eliminar</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Cancelar</button>
                 </form>
             </div>
         </div>
@@ -212,30 +227,40 @@
 </div>
 
 @section Scripts {
-    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
     <script>
         AOS.init();
 
+        // Tráiler modal
         const trailerModal = document.getElementById('trailerModal');
-        const trailerIframe = document.getElementById('modalTrailer');
+        const trailerIframe = document.getElementById('iframeTrailer');
 
-        trailerModal.addEventListener('show.bs.modal', function (event) {
+                trailerModal.addEventListener('show.bs.modal', function (event) {
             const button = event.relatedTarget;
-            const url = button.getAttribute('data-trailer-url');
-            if (url) trailerIframe.src = url;
+            const baseUrl = button.getAttribute('data-trailer-url'); // CAMBIADO AQUÍ
+
+            if (baseUrl) {
+                const videoId = baseUrl.split("/").pop();
+                const embedUrl = `${baseUrl.replace("watch?v=", "embed/")}?autoplay=1&mute=1&controls=1&loop=1&playlist=${videoId}`;
+                trailerIframe.src = embedUrl;
+            }
         });
+
 
         trailerModal.addEventListener('hidden.bs.modal', function () {
             trailerIframe.src = '';
         });
 
+        // Confirmar eliminación valoración
         const confirmDeleteModal = document.getElementById('confirmDeleteModal');
-        confirmDeleteModal.addEventListener('show.bs.modal', function (event) {
-            const button = event.relatedTarget;
-            const id = button.getAttribute('data-id');
-            document.getElementById('valoracionId').value = id;
-        });
+        if (confirmDeleteModal) {
+            confirmDeleteModal.addEventListener('show.bs.modal', function (event) {
+                const button = event.relatedTarget;
+                const id = button.getAttribute('data-id');
+                document.getElementById('valoracionId').value = id;
+            });
+        }
 
+        // Error modal
         window.addEventListener('load', () => {
             const error = "@error";
             if (error) {
@@ -245,3 +270,5 @@
         });
     </script>
 }
+
+

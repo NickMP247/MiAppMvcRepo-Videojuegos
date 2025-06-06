@@ -17,18 +17,40 @@ namespace RankingVideojuegos.Controllers
             _context = context;
             _s3Service = s3Service;
         }
-        
-        public async Task<IActionResult> Index()
+
+        public async Task<IActionResult> Index(string search, string disponibilidad, List<int> plataformas)
         {
-            var juegos = await _context.Videojuegos
-                .Include(v => v.Plataformas)
+            var juegosQuery = _context.Videojuegos!
+                .Include(v => v.Plataformas)!
                     .ThenInclude(pv => pv.Plataforma)
                 .Include(v => v.Valoraciones)
-                .ToListAsync();
+                .AsQueryable();
 
+            if (!string.IsNullOrEmpty(search))
+            {
+                juegosQuery = juegosQuery.Where(v => v.Titulo!.Contains(search));
+            }
+
+            if (!string.IsNullOrEmpty(disponibilidad))
+            {
+                juegosQuery = juegosQuery.Where(v => v.Disponibilidad == disponibilidad);
+            }
+
+            if (plataformas != null && plataformas.Any())
+            {
+                juegosQuery = juegosQuery.Where(v => v.Plataformas!.Any(p => plataformas.Contains(p.PlataformaId)));
+            }
+
+            ViewBag.Plataformas = await _context.Plataformas.ToListAsync();
+            ViewBag.DisponibilidadActual = disponibilidad;
+            ViewBag.BusquedaActual = search;
+            ViewBag.PlataformasSeleccionadas = plataformas;
+
+            var juegos = await juegosQuery.ToListAsync();
             return View(juegos);
         }
-        
+
+
         public async Task<IActionResult> Details(int id)
         {
             var juego = await _context.Videojuegos
@@ -80,12 +102,20 @@ namespace RankingVideojuegos.Controllers
         public async Task<IActionResult> Edit(int id)
         {
             var juego = await _context.Videojuegos
-                .Include(p => p.Plataformas)
+                .Include(v => v.Plataformas)
+                    .ThenInclude(pv => pv.Plataforma)
                 .FirstOrDefaultAsync(v => v.Id == id);
 
             if (juego == null) return NotFound();
 
-            ViewBag.Plataformas = new MultiSelectList(await _context.Plataformas.ToListAsync(), "Id", "Nombre", juego.Plataformas.Select(p => p.PlataformaId));
+            var plataformasSeleccionadas = juego.Plataformas.Select(p => p.PlataformaId).ToList();
+
+            ViewBag.Plataformas = new MultiSelectList(
+                await _context.Plataformas.ToListAsync(),
+                "Id", "Nombre",
+                plataformasSeleccionadas
+            );
+
             return View(juego);
         }
 
@@ -126,6 +156,7 @@ namespace RankingVideojuegos.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+
 
         [Authorize(Roles = "admin")]
         public async Task<IActionResult> Delete(int id)
