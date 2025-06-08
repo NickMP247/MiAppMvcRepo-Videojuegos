@@ -46,7 +46,8 @@ namespace RankingVideojuegos.Controllers
             ViewBag.BusquedaActual = search;
             ViewBag.PlataformasSeleccionadas = plataformas;
 
-            var juegos = await juegosQuery.ToListAsync();
+            var juegos = await juegosQuery.OrderByDescending(v => v.Id).ToListAsync();
+
             return View(juegos);
         }
 

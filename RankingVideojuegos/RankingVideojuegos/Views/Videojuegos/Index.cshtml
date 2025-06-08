@@ -7,40 +7,45 @@
 }
 
 <div class="container mt-5" data-aos="fade-up">
-    <h2 class="text-center mb-5 fw-bold" style="border-bottom: 2px solid #9f7aea; padding-bottom: 0.5rem;">
+    
+    <h1 class="text-center neon-title-purple text-light mb-5 fw-bold">
         🎮 Ranking de Videojuegos
-    </h2>
+    </h1>
 
     @if (User.IsInRole("admin"))
     {
-        <div class="text-end mb-4" data-aos="fade-left">
+        <div class="text-start mb-3" data-aos="fade-left">
             <a asp-action="Create" class="btn btn-gradient px-4 py-2">
                 <i class="fas fa-plus-circle me-2"></i>Nuevo Videojuego
             </a>
         </div>
     }
+
     <form method="get" asp-action="Index" id="busquedaForm">
-        <div class="row g-2 align-items-center mb-4">
+        <div class="row g-2 mb-4 align-items-end">
             <div class="col-md-6">
-                <label class="form-label">Buscar por título</label>
-                <input type="text" name="search" class="form-control" placeholder="Ej: Zelda" value="@ViewBag.BusquedaActual" />
+                <input type="text" name="search" class="form-control" placeholder="Buscar por título" value="@ViewBag.BusquedaActual" />
             </div>
 
-            <div class="col-md-2 d-flex align-items-end">
-                <button type="submit" class="btn btn-gradient w-100"><i class="fas fa-search me-2"></i>Buscar</button>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-gradient w-100 h-100">
+                    <i class="fas fa-search me-2"></i>Buscar
+                </button>
             </div>
 
-            <div class="col-md-2 d-flex align-items-end">
-                <button class="btn btn-neon-light w-100" type="button" data-bs-toggle="collapse" data-bs-target="#filtros" aria-expanded="false" aria-controls="filtros">
+            <div class="col-md-2">
+                <button class="btn btn-neon-light w-100 h-100" type="button"
+                        data-bs-toggle="collapse" data-bs-target="#filtros" aria-expanded="false" aria-controls="filtros">
                     <i class="fas fa-bars me-2"></i>Filtros
                 </button>
             </div>
+
         </div>
     </form>
 
     <div class="collapse mb-4" id="filtros">
         <div class="card card-body bg-dark text-light shadow-lg border border-secondary">
-            <form method="get" asp-action="Index">
+            <form method="get" asp-action="Index" class="edit-form">
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label for="disponibilidad" class="form-label">Disponibilidad</label>
@@ -124,12 +129,15 @@
 
                         <div class="mt-4">
                             <div class="d-flex justify-content-between align-items-center mb-2">
-                                <a asp-action="Details" asp-route-id="@juego.Id" class="btn btn-neon btn-sm px-3">Ver detalles</a>
+                                @* <a asp-action="Details" asp-route-id="@juego.Id" class="btn btn-neon btn-sm px-3">Ver detalles</a> *@
 
                                 @if (!string.IsNullOrEmpty(juego.TrailerEmbedUrl))
                                 {
-                                    <button class="btn btn-neon-light btn-sm px-3" data-bs-toggle="modal" data-bs-target="#modalTrailer" data-url="@juego.TrailerEmbedUrl">
-                                        Ver tráiler
+                                    <button class="btn btn-gradient btn-sm mt-3 shadow-sm"
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#modalTrailer" 
+                                    data-url="@juego.TrailerEmbedUrl">
+                                        <i class="fas fa-play me-2"></i>Ver tráiler
                                     </button>
                                 }
                             </div>
@@ -227,8 +235,9 @@
         });
     </script>
 
-    
-    <script>//Esto es para que al hacer clic en el modal nos mande ala vista de detalles
+
+    <script>
+        // Navegación al hacer clic en la card
         document.querySelectorAll('.game-card').forEach(card => {
             card.addEventListener('click', function () {
                 const url = this.getAttribute('data-url');
@@ -237,7 +246,15 @@
                 }
             });
         });
+
+        // Evita que el clic en botones internos dispare el evento de la card
+        document.querySelectorAll('.game-card button, .game-card a').forEach(el => {
+            el.addEventListener('click', function (event) {
+                event.stopPropagation();
+            });
+        });
     </script>
+
 
 }
 
